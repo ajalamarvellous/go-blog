@@ -17,12 +17,24 @@ func home(
 	w.Write([]byte("Hello from Marve"))
 }
 
+func snippetView(
+	w http.ResponseWriter, r *http.Request){
+		w.Write([]byte("View the snippet..."))
+	}
 
+
+func snippetCreate(
+	w http.ResponseWriter,
+	r *http.Request){
+		w.Write([]byte("Creating a snippet"))
+	}
 
 func main(){
 	// Using http.NewServeMux to create the router
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
+	mux.HandleFunc("/snippet/view", snippetView)
+	mux.HandleFunc("/snippet/create", snippetCreate)
 
 	// starting a new server using http.ListenAndServe and port 400
 	// http.ListenAndServer requires majorly 2 parameters, port and router
