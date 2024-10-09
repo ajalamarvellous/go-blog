@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"strconv"
 	"net/http"
 )
 
@@ -19,7 +21,13 @@ func home(
 
 func snippetView(
 	w http.ResponseWriter, r *http.Request){
-		w.Write([]byte("View the snippet..."))
+		// get specific id from the url query
+		id, err := strconv.Atoi(r.URL.Query().Get("id")) 
+		if err != nil || id < 1 {
+			http.NotFound(w, r)
+			return 
+		}
+		fmt.Fprintf(w, "Displat this specific response with ID %d..", id)
 	}
 
 
