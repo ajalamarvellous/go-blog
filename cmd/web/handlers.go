@@ -23,6 +23,7 @@ func home(
 	// base file being the first file to mention/list
 	files := []string{
 		"./ui/html/base.html",
+		"./ui/html/partials/nav.html",
 		"./ui/html/pages/home.html",
 	}
 	ts, err := template.ParseFiles(files...)
