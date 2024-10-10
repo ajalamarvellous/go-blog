@@ -12,7 +12,7 @@ func (app *application) home(
 	w http.ResponseWriter, r *http.Request){
 	// Checks if the url ends with "/"
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 	// We will link the html template page with the home handler
@@ -26,8 +26,7 @@ func (app *application) home(
 	}
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		app.errorLog.Println(err.Error())
-		http.Error(w, "Internal Server Error", 500)
+		app.serverError(w, err)
 		return
 	}
 	// We will use Execute() method to write the template content as response body
@@ -35,8 +34,7 @@ func (app *application) home(
 	// leave as nil for now
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		app.errorLog.Println(err.Error())
-		http.Error(w, "Internal Error occurred", 500)
+		app.serverError(w, err)
 	}
 }
 
@@ -46,7 +44,7 @@ func (app *application) snippetView(
 		// get specific id from the url query
 		id, err := strconv.Atoi(r.URL.Query().Get("id")) 
 		if err != nil || id < 1 {
-			http.NotFound(w, r)
+			app.notFound(w)
 			return 
 		}
 		fmt.Fprintf(w, "Displat this specific response with ID %d..", id)
@@ -61,7 +59,7 @@ func (app *application)snippetCreate(
 			// if the method is not POST, return a 405 status and 
 			// write method is not allowed
 			w.Header().Set("Allow", "POST")
-			http.Error(w, "Method is not Allowed", http.StatusMethodNotAllowed)
+			app.clientError(w, http.StatusMethodNotAllowed)
 			return
 		}
 		w.Write([]byte("Creating a snippet"))
