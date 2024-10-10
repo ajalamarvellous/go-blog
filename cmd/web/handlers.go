@@ -19,7 +19,13 @@ func home(
 	}
 	// We will link the html template page with the home handler
 	// using template.ParseFiles(), if there's error, we log and send generic 500 to user
-	ts, err := template.ParseFiles("./ui/html/pages/home.html")
+	// We will also initialise a slice containing both our base and specific page with the 
+	// base file being the first file to mention/list
+	files := []string{
+		"./ui/html/base.html",
+		"./ui/html/pages/home.html",
+	}
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
@@ -28,7 +34,7 @@ func home(
 	// We will use Execute() method to write the template content as response body
 	// the second argument is supposed to be any dynamic content we want to send but 
 	// leave as nil for now
-	err = ts.Execute(w, nil)
+	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "Internal Error occurred", 500)
