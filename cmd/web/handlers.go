@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
 	"fmt"
 	"strconv"
 	"net/http"
+	"html/template"
 )
 
 // Define home handler func, write a byte slice 
@@ -15,7 +17,22 @@ func home(
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("Hello from Marve"))
+	// We will link the html template page with the home handler
+	// using template.ParseFiles(), if there's error, we log and send generic 500 to user
+	ts, err := template.ParseFiles("./ui/html/pages/home.html")
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	// We will use Execute() method to write the template content as response body
+	// the second argument is supposed to be any dynamic content we want to send but 
+	// leave as nil for now
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Error occurred", 500)
+	}
 }
 
 func snippetView(
