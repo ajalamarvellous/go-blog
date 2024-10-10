@@ -1,11 +1,17 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 )
 
 func main(){
+	// define commandline arguments for port-address
+	// the arguments in order name_of_arg, default_value, description
+	addr := flag.String("addr", ":4000", "HTTP Port to use")
+	flag.Parse()
+
 	// Using http.NewServeMux to create the router
 	mux := http.NewServeMux()
 	// Adding a file handler to serve the frontend css and js files
@@ -18,8 +24,8 @@ func main(){
 
 	// starting a new server using http.ListenAndServe and port 400
 	// http.ListenAndServer requires majorly 2 parameters, port and router
-	log.Println("Starting server on :4000")
-	err := http.ListenAndServe(":4000", mux)
+	log.Printf("Starting server on %s", *addr)
+	err := http.ListenAndServe(*addr, mux)
 
 	// if any error (http.ListenAndServe returns non nil), log error and close
 	log.Fatal(err)
