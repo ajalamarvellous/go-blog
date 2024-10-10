@@ -1,16 +1,14 @@
 package main
 
 import (
-	"log"
 	"fmt"
 	"strconv"
 	"net/http"
 	"html/template"
 )
 
-// Define home handler func, write a byte slice 
-// containing "Hello from Marve" as response
-func home(
+// Home is defined as a method of application struct now
+func (app *application) home(
 	w http.ResponseWriter, r *http.Request){
 	// Checks if the url ends with "/"
 	if r.URL.Path != "/" {
@@ -28,7 +26,7 @@ func home(
 	}
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		log.Println(err.Error())
+		app.errorLog.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
@@ -37,12 +35,13 @@ func home(
 	// leave as nil for now
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		log.Println(err.Error())
+		app.errorLog.Println(err.Error())
 		http.Error(w, "Internal Error occurred", 500)
 	}
 }
 
-func snippetView(
+// snippetView defined as a method of application
+func (app *application) snippetView(
 	w http.ResponseWriter, r *http.Request){
 		// get specific id from the url query
 		id, err := strconv.Atoi(r.URL.Query().Get("id")) 
@@ -53,8 +52,8 @@ func snippetView(
 		fmt.Fprintf(w, "Displat this specific response with ID %d..", id)
 	}
 
-
-func snippetCreate(
+// snippetCreate as a method of application
+func (app *application)snippetCreate(
 	w http.ResponseWriter,
 	r *http.Request){
 		// if r.Method != "POST"{

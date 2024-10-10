@@ -1,10 +1,19 @@
 package main
 
 import (
+	"os"
 	"flag"
 	"log"
 	"net/http"
 )
+
+
+// creating an application struct with dependencies 
+// will only contain the different loggers for a start
+type application struct{
+	errorLog *log.Logger
+	infoLog *log.Logger
+}
 
 func main(){
 	// define commandline arguments for port-address
@@ -12,21 +21,40 @@ func main(){
 	addr := flag.String("addr", ":4000", "HTTP Port to use")
 	flag.Parse()
 
+	
+	// creating two different loggers for info and errors
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	// instantiating application class
+	app := application{
+		errorLog: errorLog,
+		infoLog: infoLog,
+	}
+
 	// Using http.NewServeMux to create the router
 	mux := http.NewServeMux()
 	// Adding a file handler to serve the frontend css and js files
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet/view", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/snippet/view", app.snippetView)
+	mux.HandleFunc("/snippet/create", app.snippetCreate)
+
+	// instantiating a new server object that takes in our port address
+	// error logger and server handler
+	srv := &http.Server{
+		Addr: *addr,
+		ErrorLog: errorLog,
+		Handler: mux,
+	}
 
 	// starting a new server using http.ListenAndServe and port 400
 	// http.ListenAndServer requires majorly 2 parameters, port and router
-	log.Printf("Starting server on %s", *addr)
-	err := http.ListenAndServe(*addr, mux)
+	app.infoLog.Printf("Starting server on %s", *addr)
+	// err := http.ListenAndServe(*addr, mux)
+	err := srv.ListenAndServe()
 
 	// if any error (http.ListenAndServe returns non nil), log error and close
-	log.Fatal(err)
+	errorLog.Fatal(err)
 }
