@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"database/sql"
+	"first-go-project/internal/database"  // the db model we defined 
     _ "github.com/go-sql-driver/mysql"
 )
 
@@ -15,6 +16,7 @@ import (
 type application struct{
 	errorLog *log.Logger
 	infoLog *log.Logger
+	db *database.DatabaseModel
 }
 
 func main(){
@@ -43,6 +45,7 @@ func main(){
 	app := &application{
 		errorLog: errorLog,
 		infoLog: infoLog,
+		db: &database.DatabaseModel{DB: db},
 	}
 
 

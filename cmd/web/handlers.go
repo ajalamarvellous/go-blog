@@ -62,6 +62,16 @@ func (app *application)snippetCreate(
 			app.clientError(w, http.StatusMethodNotAllowed)
 			return
 		}
-		w.Write([]byte("Creating a snippet"))
+		// creating some dummy variable for the build
+		title := "Personal info"
+		content := "Date of Birth: July 18, \n Hometown: Ogbomoso, Oyo state \n current profession: Jobless"
+		var expires int = 90
+		// pass the data into the db.insert method
+		id, err := app.db.Insert(title, content, expires)
+		if err != nil {
+			app.serverError(w, err)
+		}
+		http.Redirect(w, r, fmt.Sprintf("/snippet/view?id=%d", id),
+			http.StatusSeeOther)
 	}
 
