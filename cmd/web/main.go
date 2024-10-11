@@ -31,22 +31,13 @@ func main(){
 		infoLog: infoLog,
 	}
 
-	// Using http.NewServeMux to create the router
-	mux := http.NewServeMux()
-	// Adding a file handler to serve the frontend css and js files
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
 	// instantiating a new server object that takes in our port address
 	// error logger and server handler
 	srv := &http.Server{
 		Addr: *addr,
 		ErrorLog: errorLog,
-		Handler: mux,
+		Handler: app.routes(),
 	}
 
 	// starting a new server using http.ListenAndServe and port 400
