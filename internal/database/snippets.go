@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"database/sql"
 	"time"
 )
@@ -39,7 +40,24 @@ func (db *DatabaseModel) Insert(
 
 // function to get a particular id
 func (db *DatabaseModel) Get(id int) (*Content, error){
-	return nil, nil
+	// SQL query to get specific data id
+	stmt := "SELECT id, title, content, created, expires FROM snippets WHERE id=?;"
+	// using exec to execute the query
+	row := db.DB.QueryRow(stmt, id)
+	
+	// creating a new pointer for the content row 
+	s := &Content{}
+
+	// using row scan to copy the content of the row to the content object
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows){
+			return nil, err
+		} else {
+			return nil, err
+		}
+	}
+	return s, nil
 }
 
 // this will return the 10 most recent contents

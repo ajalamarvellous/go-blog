@@ -47,7 +47,11 @@ func (app *application) snippetView(
 			app.notFound(w)
 			return 
 		}
-		fmt.Fprintf(w, "Displat this specific response with ID %d..", id)
+		content, err := app.db.Get(id)
+		if err != nil {
+			app.notFound(w)
+		}
+		w.Write([]byte(content.Content))
 	}
 
 // snippetCreate as a method of application
