@@ -31,23 +31,23 @@ func (app *application) home(
 		app.serverError(w, err)
 		return
 	}
+	// Getting the most recent values in our database
+	contents, err := app.db.Recent()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	data := &templateData{
+		Contents: contents,
+	}
 	// We will use Execute() method to write the template content as response body
 	// the second argument is supposed to be any dynamic content we want to send but 
 	// leave as nil for now
-	err = ts.ExecuteTemplate(w, "base", nil)
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
 	}
 }
-// 	contents, err := app.db.Recent()
-// 	if err != nil {
-// 		app.serverError(w, err)
-// 		return
-// 	}
-// 	for _, content := range contents {
-// 		fmt.Fprint(w, "%+v\n", content)
-// 	}
-// }
 
 // snippetView defined as a method of application
 func (app *application) snippetView(
@@ -79,6 +79,8 @@ func (app *application) snippetView(
 		if err != nil {
 			app.serverError(w, err)
 		}
+
+
 		err = ts.ExecuteTemplate(w, "base", content)
 		if err != nil {
 			app.serverError(w, err)

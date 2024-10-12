@@ -2,9 +2,22 @@
 
 {{define "main"}}
     <h2>Latest writings</h2>
-    <p>Here is a list of contents you check here
-        <ul><a href="/snippet/view?id=1">Content 1</a></ul>
-        <ul><a href="/snippet/view?id=2">Content 2</a></ul>
-        <ul><a href="/snippet/view?id=3">Content 3</a></ul>
-    </p>
+    {{if .Contents}}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Created</th>
+        </tr>
+        {{range .Contents}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td><a href="/snippet/view?id={{.ID}}">{{.Title}}</a></td>
+            <td>{{.Created}}</td>
+        </tr>
+        {{end}}
+     </table>
+    {{else}}
+    <p>There's nothing to see here yet!</p>
+    {{end}} 
 {{end}}
