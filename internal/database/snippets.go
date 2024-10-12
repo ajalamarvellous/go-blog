@@ -52,7 +52,7 @@ func (db *DatabaseModel) Get(id int) (*Content, error){
 	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows){
-			return nil, err
+			return nil, ErrNoRecord
 		} else {
 			return nil, err
 		}
@@ -62,5 +62,40 @@ func (db *DatabaseModel) Get(id int) (*Content, error){
 
 // this will return the 10 most recent contents
 func (db *DatabaseModel) Recent() ([]*Content, error){
-	return nil, nil
+	// SQL query to get specific data id
+	stmt := "SELECT id, title, content, created, expires FROM snippets LIMIT 10;"
+	// using exec to execute the query
+	rows, err := db.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	// defering the closing of the row
+	defer rows.	Close()
+	
+	// creating an array to contain all our data
+	data := []*Content{}
+
+	//interating through the rows
+	for rows.Next(){
+		// creating a new pointer for the content row 
+		s := &Content{}
+
+		// using row scan to copy the content of the row to the content object
+		err := rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, s)
+	}
+		if err = rows.Err(); err != nil {
+			return nil, err
+		} 
+		// errors.Is(err, sql.ErrNoRows){
+		// 	return nil, ErrNoRecord
+		// } else {
+		// 	return nil, err
+		// }
+	
+	return data, nil
 }

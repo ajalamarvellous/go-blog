@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"errors"
 	"strconv"
 	"net/http"
-	"html/template"
+	// "html/template"
+	"first-go-project/internal/database"
 )
 
 // Home is defined as a method of application struct now
@@ -19,22 +21,31 @@ func (app *application) home(
 	// using template.ParseFiles(), if there's error, we log and send generic 500 to user
 	// We will also initialise a slice containing both our base and specific page with the 
 	// base file being the first file to mention/list
-	files := []string{
-		"./ui/html/base.html",
-		"./ui/html/partials/nav.html",
-		"./ui/html/pages/home.html",
-	}
-	ts, err := template.ParseFiles(files...)
+// 	files := []string{
+// 		"./ui/html/base.html",
+// 		"./ui/html/partials/nav.html",
+// 		"./ui/html/pages/home.html",
+// 	}
+// 	ts, err := template.ParseFiles(files...)
+// 	if err != nil {
+// 		app.serverError(w, err)
+// 		return
+// 	}
+// 	// We will use Execute() method to write the template content as response body
+// 	// the second argument is supposed to be any dynamic content we want to send but 
+// 	// leave as nil for now
+// 	err = ts.ExecuteTemplate(w, "base", nil)
+// 	if err != nil {
+// 		app.serverError(w, err)
+// 	}
+// }
+	contents, err := app.db.Recent()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-	// We will use Execute() method to write the template content as response body
-	// the second argument is supposed to be any dynamic content we want to send but 
-	// leave as nil for now
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, err)
+	for _, content := range contents {
+		fmt.Fprint(w, "%+v\n", content)
 	}
 }
 
@@ -49,9 +60,14 @@ func (app *application) snippetView(
 		}
 		content, err := app.db.Get(id)
 		if err != nil {
-			app.notFound(w)
+			if errors.Is(err, database.ErrNoRecord){
+				app.notFound(w)
+			} else {
+				app.serverError(w, err)
+			}
+			return
 		}
-		w.Write([]byte(content.Content))
+		fmt.Fprintf(w, "%+v",content)
 	}
 
 // snippetCreate as a method of application
