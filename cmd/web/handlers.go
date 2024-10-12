@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strconv"
 	"net/http"
-	// "html/template"
+	"html/template"
 	"first-go-project/internal/database"
 )
 
@@ -21,33 +21,33 @@ func (app *application) home(
 	// using template.ParseFiles(), if there's error, we log and send generic 500 to user
 	// We will also initialise a slice containing both our base and specific page with the 
 	// base file being the first file to mention/list
-// 	files := []string{
-// 		"./ui/html/base.html",
-// 		"./ui/html/partials/nav.html",
-// 		"./ui/html/pages/home.html",
-// 	}
-// 	ts, err := template.ParseFiles(files...)
-// 	if err != nil {
-// 		app.serverError(w, err)
-// 		return
-// 	}
-// 	// We will use Execute() method to write the template content as response body
-// 	// the second argument is supposed to be any dynamic content we want to send but 
-// 	// leave as nil for now
-// 	err = ts.ExecuteTemplate(w, "base", nil)
-// 	if err != nil {
-// 		app.serverError(w, err)
-// 	}
-// }
-	contents, err := app.db.Recent()
+	files := []string{
+		"./ui/html/base.html",
+		"./ui/html/partials/nav.html",
+		"./ui/html/pages/home.html",
+	}
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
-	for _, content := range contents {
-		fmt.Fprint(w, "%+v\n", content)
+	// We will use Execute() method to write the template content as response body
+	// the second argument is supposed to be any dynamic content we want to send but 
+	// leave as nil for now
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		app.serverError(w, err)
 	}
 }
+// 	contents, err := app.db.Recent()
+// 	if err != nil {
+// 		app.serverError(w, err)
+// 		return
+// 	}
+// 	for _, content := range contents {
+// 		fmt.Fprint(w, "%+v\n", content)
+// 	}
+// }
 
 // snippetView defined as a method of application
 func (app *application) snippetView(
@@ -67,7 +67,22 @@ func (app *application) snippetView(
 			}
 			return
 		}
-		fmt.Fprintf(w, "%+v",content)
+		// initialising a new slice that contain list of html files including
+		// new view.html
+		files := []string{
+			"./ui/html/base.html",
+			"./ui/html/partials/nav.html",
+			"./ui/html/pages/view.html",
+		}
+		// parsing the files
+		ts, err := template.ParseFiles(files...)
+		if err != nil {
+			app.serverError(w, err)
+		}
+		err = ts.ExecuteTemplate(w, "base", content)
+		if err != nil {
+			app.serverError(w, err)
+		}
 	}
 
 // snippetCreate as a method of application
