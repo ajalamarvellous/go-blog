@@ -28,13 +28,23 @@ func newTemplateCache() (map[string]*template.Template, error){
 		// Extract eh file name from the file path
 		name := filepath.Base(page)
 	
-		files := []string {
-			"./ui/html/base.html",
-			"./ui/html/partials/nav.html",
-			page,
+		// files := []string {
+		// 	"./ui/html/base.html",
+		// 	"./ui/html/partials/nav.html",
+		// 	page,
+		// }
+		// parse the base file into a template set
+		ts, err := template.ParseFiles("./ui/html/base.html")
+		if err != nil {
+			return nil, err
 		}
-		// parse the files into a template set
-		ts, err := template.ParseFiles(files...)
+		// parse the partial files into a template set
+		ts, err = ts.ParseGlob("./ui/html/partials/*.html")
+		if err != nil {
+			return nil, err
+		}
+		// parse the main page into a template set
+		ts, err = ts.ParseFiles(page)
 		if err != nil {
 			return nil, err
 		}
