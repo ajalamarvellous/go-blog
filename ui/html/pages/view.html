@@ -1,15 +1,15 @@
-{{define "title"}} Content #{{.ID}} {{end}}
+{{define "title"}} Content #{{.Content.ID}} {{end}}
 
 {{define "main"}}
     <div class="content">
         <div class="metadata">
-            <strong>{{.Title}}</strong>
-            <span>#{{.ID}}</span>
+            <strong>{{.Content.Title}}</strong>
+            <span>#{{.Content.ID}}</span>
         </div>
-        <pre><code>{{.Content}}</code></pre>
+        <pre><code>{{.Content.Content}}</code></pre>
         <div class="metadata">
-            <time>Created: {{.Created}}</time>
-            <time>Expires {{.Expires}}</time>
+            <time>Created: {{.Content.Created}}</time>
+            <time>Expires {{.Content.Expires}}</time>
         </div>
     </div>
 {{end}}

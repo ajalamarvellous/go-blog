@@ -5,7 +5,6 @@ import (
 	"errors"
 	"strconv"
 	"net/http"
-	"html/template"
 	"first-go-project/internal/database"
 )
 
@@ -17,20 +16,7 @@ func (app *application) home(
 		app.notFound(w)
 		return
 	}
-	// We will link the html template page with the home handler
-	// using template.ParseFiles(), if there's error, we log and send generic 500 to user
-	// We will also initialise a slice containing both our base and specific page with the 
-	// base file being the first file to mention/list
-	files := []string{
-		"./ui/html/base.html",
-		"./ui/html/partials/nav.html",
-		"./ui/html/pages/home.html",
-	}
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+
 	// Getting the most recent values in our database
 	contents, err := app.db.Recent()
 	if err != nil {
@@ -40,13 +26,8 @@ func (app *application) home(
 	data := &templateData{
 		Contents: contents,
 	}
-	// We will use Execute() method to write the template content as response body
-	// the second argument is supposed to be any dynamic content we want to send but 
-	// leave as nil for now
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	app.render(w, http.StatusOK, "home.html", data)
+
 }
 
 // snippetView defined as a method of application
@@ -67,24 +48,12 @@ func (app *application) snippetView(
 			}
 			return
 		}
-		// initialising a new slice that contain list of html files including
-		// new view.html
-		files := []string{
-			"./ui/html/base.html",
-			"./ui/html/partials/nav.html",
-			"./ui/html/pages/view.html",
-		}
-		// parsing the files
-		ts, err := template.ParseFiles(files...)
-		if err != nil {
-			app.serverError(w, err)
+		
+		data := &templateData{
+			Content: content,
 		}
 
-
-		err = ts.ExecuteTemplate(w, "base", content)
-		if err != nil {
-			app.serverError(w, err)
-		}
+		app.render(w, http.StatusOK, "view.html", data)
 	}
 
 // snippetCreate as a method of application

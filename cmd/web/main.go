@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"database/sql"
+	"html/template"
 	"first-go-project/internal/database"  // the db model we defined 
     _ "github.com/go-sql-driver/mysql"
 )
@@ -14,9 +15,10 @@ import (
 // creating an application struct with dependencies 
 // will only contain the different loggers for a start
 type application struct{
-	errorLog *log.Logger
-	infoLog *log.Logger
-	db *database.DatabaseModel
+	errorLog 	*log.Logger
+	infoLog 	*log.Logger
+	db 			*database.DatabaseModel
+	templateCache  map[string]*template.Template
 }
 
 func main(){
@@ -41,11 +43,18 @@ func main(){
     // but also db closes before the main file closes
     defer db.Close()
 
+	// initiating the new template cache
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	// instantiating application class
 	app := &application{
 		errorLog: errorLog,
 		infoLog: infoLog,
 		db: &database.DatabaseModel{DB: db},
+		templateCache: templateCache,
 	}
 
 
