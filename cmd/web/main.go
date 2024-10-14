@@ -17,6 +17,7 @@ import (
 type application struct{
 	errorLog 	*log.Logger
 	infoLog 	*log.Logger
+	users		*database.UserDB
 	db 			*database.DatabaseModel
 	templateCache  map[string]*template.Template
 }
@@ -54,6 +55,7 @@ func main(){
 		errorLog: errorLog,
 		infoLog: infoLog,
 		db: &database.DatabaseModel{DB: db},
+		users : &database.UserDB{DB: db},
 		templateCache: templateCache,
 	}
 

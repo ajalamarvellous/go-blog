@@ -81,3 +81,41 @@ func (app *application)snippetCreate(
 			http.StatusSeeOther)
 	}
 
+
+func (app *application) userSignup (
+	w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			fmt.Fprintln(w, "Display the html form for signing up new users...")
+		} else {
+			if r.Method == "POST" {
+				app.userSignup(w, r)
+			}
+		}
+	
+	}
+
+func (app *application) userSignupPost(
+	w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Create a new user...")
+	}
+
+func (app *application) userLogin(
+	w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost{
+			app.userLoginPost(w,r)
+		} else {
+			if r.Method == http.MethodGet {
+				fmt.Fprintln(w, "Display the login page here...")
+			}
+		}
+	}
+
+func (app *application) userLoginPost(
+	w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Authenticating user...")
+	}
+
+func (app *application) userLogoutPost(
+	w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Logging out user...")
+	}
