@@ -70,7 +70,7 @@ func main(){
 	// http.ListenAndServer requires majorly 2 parameters, port and router
 	app.infoLog.Printf("Starting server on %s", *addr)
 	// err := http.ListenAndServe(*addr, mux)
-	err = srv.ListenAndServe()
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 
 	// if any error (http.ListenAndServe returns non nil), log error and close
 	errorLog.Fatal(err)
