@@ -13,6 +13,9 @@ func (app *application) routes() http.Handler{
 	mux.HandleFunc("/", app.home)
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
+	mux.HandleFunc("/user/signup", app.userSignup)
+	mux.HandleFunc("/user/login", app.userLogin)
+	mux.HandleFunc("/user/logout", app.userLogoutPost)
 
 	return secureHeaders(mux)
 }
